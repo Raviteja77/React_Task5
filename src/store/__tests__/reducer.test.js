@@ -1,113 +1,57 @@
-import { createSlice } from '@reduxjs/toolkit';
+import courseReducer from '../courses/reducer';
+import * as action from '../courses/actionTypes';
 
-const initialState = [
+const courseList = [
 	{
-		authors: ['9870c529-3479-4113-a68d-f44710a87e99'],
-		creationDate: '28/02/2022',
-		description: 'angular',
-		duration: 10,
-		id: '6359acf0-d79a-4080-a4bb-377de63b0489',
-		title: 'Angular 2.1.2.3.4',
+		title: 'React',
+		description: 'React testing',
+		duration: 45,
+		creationDate: '04/03/2022',
+		id: 'thisisafakeid',
+		authors: [
+			'9870c529-3479-4113-a68d-f44710a87e99',
+			'a49ecbe9-ad6d-4c26-bdeb-3bcc4bc9e5dc',
+		],
 	},
 ];
 
-const coursesSlice = createSlice({
-	name: 'courses',
-	initialState,
-	reducers: {
-		saveCourse(state, action) {
-			state.push({
-				id: action.payload.id,
-				title: action.payload.title,
-				description: action.payload.description,
-				duration: action.payload.duration,
-				creationDate: action.payload.creationDate,
-				authors: action.payload.authors,
-			});
-		},
-	},
-});
-
-export const { saveCourse } = coursesSlice.actions;
+const initialState = {
+	courses: courseList,
+	error: '',
+};
 
 describe('courses', () => {
 	test('should have initial details', () => {
-		expect(coursesSlice.reducer(undefined, {})).toEqual([
-			{
-				authors: ['9870c529-3479-4113-a68d-f44710a87e99'],
-				creationDate: '28/02/2022',
-				description: 'angular',
-				duration: 10,
-				id: '6359acf0-d79a-4080-a4bb-377de63b0489',
-				title: 'Angular 2.1.2.3.4',
-			},
-		]);
-	});
-	test('should handle a course being added to an empty list', () => {
-		const previousState = [];
 		expect(
-			coursesSlice.reducer(
-				previousState,
-				saveCourse({
-					authors: ['9870c529-3479-4113-a68d-f44710a87e99'],
-					creationDate: '28/02/2022',
-					description: 'angular dart 2.0.1',
-					duration: 10,
-					id: '6359acf0-d79a-4080-a4bb-377de63b0489',
-					title: 'Angular dart',
-				})
-			)
-		).toEqual([
-			{
-				authors: ['9870c529-3479-4113-a68d-f44710a87e99'],
-				creationDate: '28/02/2022',
-				description: 'angular dart 2.0.1',
-				duration: 10,
-				id: '6359acf0-d79a-4080-a4bb-377de63b0489',
-				title: 'Angular dart',
-			},
-		]);
+			courseReducer([], {
+				type: action.DEFAULT,
+				payload: '',
+			})
+		).toEqual([]);
 	});
-	test('should handle a course being added to an existing list', () => {
-		const previousState = [
-			{
-				authors: ['9870c529-3479-4113-a68d-f44710a87e99'],
-				creationDate: '28/02/2022',
-				description: 'angular dart 2.0.1',
-				duration: 10,
-				id: '6359acf0-d79a-4080-a4bb-377de63b0489',
-				title: 'Angular dart',
-			},
-		];
-		expect(
-			coursesSlice.reducer(
-				previousState,
-				saveCourse({
-					authors: ['9870c529-3479-4113-a68d-f44710a87e99'],
-					creationDate: '28/02/2022',
-					description: 'react',
-					duration: 100,
-					id: '6359acf0-d79a-4080-a4bb-377de63b0489',
-					title: 'react',
-				})
-			)
-		).toEqual([
-			{
-				authors: ['9870c529-3479-4113-a68d-f44710a87e99'],
-				creationDate: '28/02/2022',
-				description: 'angular dart 2.0.1',
-				duration: 10,
-				id: '6359acf0-d79a-4080-a4bb-377de63b0489',
-				title: 'Angular dart',
-			},
-			{
-				authors: ['9870c529-3479-4113-a68d-f44710a87e99'],
-				creationDate: '28/02/2022',
-				description: 'react',
-				duration: 100,
-				id: '6359acf0-d79a-4080-a4bb-377de63b0489',
-				title: 'react',
-			},
-		]);
+	test('should handle a course being added to list', () => {
+		const course = {
+			title: 'Angular',
+			description: 'Angular testing',
+			duration: 45,
+			creationDate: '04/03/2022',
+			id: 'thisisafakeid',
+			authors: [
+				'9870c529-3479-4113-a68d-f44710a87e99',
+				'a49ecbe9-ad6d-4c26-bdeb-3bcc4bc9e5dc',
+			],
+		};
+		const newState = courseReducer(initialState, {
+			type: action.ADD_COURSE_SUCCESS,
+			payload: course,
+		});
+		expect(newState.courses[1]).toEqual(course);
+	});
+	test('should handle a course being added to list', () => {
+		const newState = courseReducer(initialState, {
+			type: action.FETCH_COURSES_SUCCESS,
+			payload: initialState.courses,
+		});
+		expect(newState.courses).toEqual(courseList);
 	});
 });
